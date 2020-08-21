@@ -197,13 +197,15 @@ Using Postman, you can make all the requests below to test the REST API on this 
 ```
 Below are a sequence of steps that highlight the camel process:
 
-- Unmarshall the CSV input file using a Transaction CSV Item ```.unmarshal(bindy)```. 
+- Unmarshall the CSV input file using a Transaction CSV Item 
+```.unmarshal(bindy)```. 
 - Split the result into a list of transactions:
     ```
     .split(body()) 
     .streaming()
    ``` 
-- Convert the CSV Item into a JPA entity using ```.bean(mapper, "convertAndTransform")``` 
+- Convert the CSV Item into a JPA entity using 
+```.bean(mapper, "convertAndTransform")``` 
 - Persist the JPA entity into DB
     ```.to("jpa:com.example.springcameljpademo.model.TransactionEntity")```
 
