@@ -36,8 +36,8 @@ Start it up with:
 mvn clean spring-boot:run
 ```
 
-## 3. Database Installation
-### 3.1 DBML
+## 4. Database Installation
+### 4.1 DBML
 ```text
 // 1. Tables and References
 
@@ -80,7 +80,7 @@ Ref: UC.client_id > C.client_id // many-to-one
 Ref: UC.user_id > U.user_id // many-to-one
 ```
 See the above dbml doc [visualized on dbdiagam](https://dbdiagram.io/d/5f3e9875cf48a141ff559889)
-### 3.2 Create Database and Tables
+### 4.2 Create Database and Tables
 ```postgres-psql
 CREATE DATABASE "spring-camel-demo"
   WITH OWNER = postgres
@@ -122,7 +122,7 @@ CREATE TABLE user_client
     client_id        integer NOT NULL REFERENCES clients (client_id)
 );
 ```
-### 3.2 Insert Data
+### 4.3 Insert Data
 ```postgres-psql
 -- INSERT clients...
 INSERT INTO public.clients(first_name, last_name, date_of_birth)
@@ -166,7 +166,7 @@ INSERT INTO public.user_client(user_id, client_id)
     VALUES (4, 4);
 ```
 
-## 4. Rest API 
+## 5. Rest API 
 
 Using Postman, you can make all the requests below to test the REST API on this base URL http://localhost:8080:
 
@@ -187,7 +187,7 @@ Using Postman, you can make all the requests below to test the REST API on this 
 - Update a transaction: ```PUT /v1/demo/transactions/{id} ```
 - Delete a transaction: ```DELETE /v1/demo/transactions/{id} ```
 
-## 5. Camel Route
+## 6. Camel Route
 
 - Create a new file containing the transactions to be pushed into DB
 ```textmate
@@ -197,13 +197,15 @@ Using Postman, you can make all the requests below to test the REST API on this 
 ```
 Below are a sequence of steps that highlight the camel process:
 
-- Unmarshall the CSV input file using a Transaction CSV Item ```.unmarshal(bindy)```. 
+- Unmarshall the CSV input file using a Transaction CSV Item 
+```.unmarshal(bindy)```. 
 - Split the result into a list of transactions:
     ```
     .split(body()) 
     .streaming()
    ``` 
-- Convert the CSV Item into a JPA entity using ```.bean(mapper, "convertAndTransform")``` 
+- Convert the CSV Item into a JPA entity using 
+```.bean(mapper, "convertAndTransform")``` 
 - Persist the JPA entity into DB
     ```.to("jpa:com.example.springcameljpademo.model.TransactionEntity")```
 
