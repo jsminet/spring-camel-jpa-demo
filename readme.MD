@@ -1,4 +1,4 @@
-# Spring-boot-camel-jpa-demo
+# spring-boot-camel-jpa-demo
 
 ## 1. Introduction
 A demo project using :
@@ -6,24 +6,18 @@ A demo project using :
 - JPA: For the persistence layer.
 - Camel: Camel Route consuming a csv file and persisting its content to database using JPA.
 
-### Use-Case:
-Build service that:
-
-- Builds the file path from where data is read from
-- Reads data from the CSV file
-- Converts CSV records into POJO
-- Transforms data with custom code into POJO
-- Stores the final results in a database
-
 ## 2. Versions used:
 - Spring Boot: 2.3.0.RELEASE
 - Apache Camel: 3.0.0-M1
 - Camel-bindy: 3.0.0-M1
 - Camel-jpa: 3.0.0-M1
+- Postgres Docker image (9.6.19-alpine)
 - Maven: 3.0+
 - Java: 1.8
 
 ## 3. Installation
+## 3.1. Java Installation
+
 1. Open Git Bash.
 2. Change the current working directory to the location where you want the cloned directory.
 3. Type the command below to clone the repository:
@@ -31,143 +25,39 @@ Build service that:
 git clone https://github.com/drioumo/spring-camel-jpa-demo
 ```
 
+## 3.2. Database Installation using Docker image
+1. Open a terminal and run the docker command:
+```commandline
+docker run --name postgres-docker -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgres:9.6.19-alpine
+```
+Basically, this command:
+- pulls the ```postgres:9.6.19-alpine``` from [Docker Hub](https://hub.docker.com/_/postgres). 
+- names the Docker container to ```postgres-docker```
+- sets the ```POSTGRES_PASSWORD``` to ```postgres``` 
+- maps the container's internal ```5432``` port to external ```5432```
+- and enables to run the Docker container in the background (```-d```)
+
+2. Create tables & Insert Data:
+From dbeaver, you can create the postgres connection:
+
+![image](https://user-images.githubusercontent.com/6589406/90981257-3494a780-e560-11ea-811e-0fac8cd0608b.png)
+
+And execute the scripts below:
+
+![scripts](https://user-images.githubusercontent.com/6589406/90981323-9f45e300-e560-11ea-8c61-eb778925c549.png)
+
+### 3.3. DBML
+See the above dbml doc [visualized on dbdiagam](https://dbdiagram.io/d/5f3e9875cf48a141ff559889)
+
+![spring-boot-camel-jpa](https://user-images.githubusercontent.com/6589406/90981101-80931c80-e55f-11ea-8261-e638facad38a.png)
+
+### 3.4. Run the application
 Start it up with:
 ```commandline
 mvn clean spring-boot:run
 ```
 
-## 4. Database Installation
-### 4.1 DBML
-```text
-// 1. Tables and References
-
-// Creating tables
-Table clients as C {
-  client_id int [pk, increment] // auto-increment
-  first_name varchar
-  last_name varchar
-  date_of_birth date
-}
-
-Table users as U{
-  user_id int [pk, increment] // auto-increment
-  first_name varchar 
-  last_name varchar
-  trigram varchar
-}
-
-Table transactions as T{
-  transaction_id int [pk, increment] // auto-increment
-  stock varchar
-  type varchar
-  price numeric
-  transaction_date timestamp
-  quantity int
-  client_id int 
-  user_id int
-}
-
-Table user_client as UC {
-  user_client_id int [pk, increment] // auto-increment
-  client_id int 
-  user_id int
-}
-
-// 2. Creating references
-Ref: T.user_id > U.user_id // many-to-one
-Ref: T.client_id > C.client_id // many-to-one
-Ref: UC.client_id > C.client_id // many-to-one
-Ref: UC.user_id > U.user_id // many-to-one
-```
-See the above dbml doc [visualized on dbdiagam](https://dbdiagram.io/d/5f3e9875cf48a141ff559889)
-### 4.2 Create Database and Tables
-```postgres-psql
-CREATE DATABASE "spring-camel-demo"
-  WITH OWNER = postgres
-       ENCODING = 'UTF8'
-       TABLESPACE = pg_default
-       LC_COLLATE = 'English_United States.1252'
-       LC_CTYPE = 'English_United States.1252'
-       CONNECTION LIMIT = -1;
-
-CREATE TABLE clients
-(
-    client_id     SERIAL PRIMARY KEY,
-    first_name     varchar(80) NOT NULL,
-    last_name 	  varchar(80) NOT NULL,
-    date_of_birth date 
-);
-CREATE TABLE users
-(
-    user_id       SERIAL PRIMARY KEY,
-    first_name    varchar(80) NOT NULL,
-    last_name 	  varchar(80) NOT NULL,
-    trigram       varchar(80) NOT NULL
-);
-CREATE TABLE transactions
-(
-    transaction_id   SERIAL PRIMARY KEY,
-    stock            varchar(80) NOT NULL,
-	type             varchar(80) NOT NULL,
-    price 	     numeric,
-    transaction_date timestamp,
-    quantity         integer,
-    client_id        integer NOT NULL REFERENCES clients (client_id),
-    user_id          integer NOT NULL REFERENCES users (user_id)
-);
-CREATE TABLE user_client
-(
-    user_client_id   SERIAL PRIMARY KEY,
-    user_id          integer NOT NULL REFERENCES users (user_id),
-    client_id        integer NOT NULL REFERENCES clients (client_id)
-);
-```
-### 4.3 Insert Data
-```postgres-psql
--- INSERT clients...
-INSERT INTO public.clients(first_name, last_name, date_of_birth)
-    VALUES ('Thomas', 'Crane', '01/01/1979');
-INSERT INTO public.clients(first_name, last_name, date_of_birth)
-    VALUES ('Alden', 'Cantrell', '01/05/1954');
-INSERT INTO public.clients(first_name, last_name, date_of_birth)
-    VALUES ('Cierra', 'Vega', '01/04/1972');
-INSERT INTO public.clients(first_name, last_name, date_of_birth)
-    VALUES ('Miranda', 'Shaffer', '02/15/1963');
-INSERT INTO public.clients(first_name, last_name, date_of_birth)
-    VALUES ('Bradyn', 'Kramer', '09/13/1980');
-INSERT INTO public.clients(first_name, last_name, date_of_birth)
-    VALUES ('Alvaro', 'Mcgee', '01/04/1973');	
--- INSERT users...
-INSERT INTO public.users(first_name, last_name, trigram)
-    VALUES ('Mounir', 'DRIOUCHI', 'MD3431'); 
-INSERT INTO public.users(first_name, last_name, trigram)
-    VALUES ('Philippe', 'Istas', 'PBI'); 
-INSERT INTO public.users(first_name, last_name, trigram)
-    VALUES ('Gregory', 'Delespes', 'AUDGED'); 
-INSERT INTO public.users(first_name, last_name, trigram)
-    VALUES ('Philippe', 'Foguenne', 'NRBPHF');     
-                  
--- Insert user_client
-INSERT INTO public.user_client(user_id, client_id)
-    VALUES (1, 1);
-INSERT INTO public.user_client(user_id, client_id)
-    VALUES (1, 2);
-INSERT INTO public.user_client(user_id, client_id)
-    VALUES (2, 3);
-INSERT INTO public.user_client(user_id, client_id)
-    VALUES (2, 4); 
-INSERT INTO public.user_client(user_id, client_id)
-    VALUES (3, 1);
-INSERT INTO public.user_client(user_id, client_id)
-    VALUES (3, 4);           
-INSERT INTO public.user_client(user_id, client_id)
-    VALUES (4, 2);           
-INSERT INTO public.user_client(user_id, client_id)
-    VALUES (4, 4);
-```
-
-## 5. Rest API 
-
+## 4. Rest API 
 Using Postman, you can make all the requests below to test the REST API on this base URL http://localhost:8080:
 
 ### Users
@@ -187,7 +77,7 @@ Using Postman, you can make all the requests below to test the REST API on this 
 - Update a transaction: ```PUT /v1/demo/transactions/{id} ```
 - Delete a transaction: ```DELETE /v1/demo/transactions/{id} ```
 
-## 6. Camel Route
+## 5. Camel Route
 
 - Create a new file containing the transactions to be pushed into DB
 ```textmate
@@ -195,17 +85,130 @@ Using Postman, you can make all the requests below to test the REST API on this 
 2,1,AMZN,Buy,400,500
 2,2,MSFT,Buy,200,250
 ```
+and push it to the input folder 
+
+![input_folder](https://user-images.githubusercontent.com/6589406/90981602-47a87700-e562-11ea-8816-e556475604e8.png)
+
 Below are a sequence of steps that highlight the camel process:
 
 - Unmarshall the CSV input file using a Transaction CSV Item 
 ```.unmarshal(bindy)```. 
+
+```java
+package com.example.springcameljpademo.domain;
+
+import org.apache.camel.dataformat.bindy.annotation.CsvRecord;
+import org.apache.camel.dataformat.bindy.annotation.DataField;
+
+import java.math.BigDecimal;
+
+/**
+ * Created by MD3431 on 06/08/2020.
+ */
+@CsvRecord(separator = ",", skipFirstLine = false)
+public class TransactionCsvItem {
+
+    @DataField(pos = 1)
+    private Long userId;
+
+    @DataField(pos = 2)
+    private Long clientId;
+
+    @DataField(pos = 3)
+    private String stock;
+
+    @DataField(pos = 4)
+    private String type;
+
+    @DataField(pos = 5, precision = 2)
+    private BigDecimal price;
+
+    @DataField(pos = 6)
+    private Integer quantity;
+
+    public Long getUserId() {
+        return userId;
+    }
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+    public Long getClientId() {
+        return clientId;
+    }
+    public void setClientId(Long clientId) {
+        this.clientId = clientId;
+    }
+    public String getStock() {
+        return stock;
+    }
+    public void setStock(String stock) {
+        this.stock = stock;
+    }
+    public String getType() {
+        return type;
+    }
+    public void setType(String type) {
+        this.type = type;
+    }
+    public BigDecimal getPrice() {
+        return price;
+    }
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+    public Integer getQuantity() {
+        return quantity;
+    }
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
+
+    @Override
+    public String toString() {
+        return "Item{" +
+                "userId= " + userId +
+                ", clientId= " + clientId +
+                ", stock= '" + stock + '\'' +
+                ", transactionType= '" + type + '\'' +
+                ", price= '" + price +
+                ", Quantity= " + quantity +
+                '}';
+    }
+}
+```
+
 - Split the result into a list of transactions:
     ```
     .split(body()) 
     .streaming()
-   ``` 
+   ```   
 - Convert the CSV Item into a JPA entity using 
 ```.bean(mapper, "convertAndTransform")``` 
+
+```java
+@Component
+public class CsvRecordToTransactionMapper {
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private ClientService clientService;
+
+    public TransactionEntity convertAndTransform(TransactionCsvItem csvRecord) throws RecordNotFoundException {
+        //TODO using Lombok builder
+        TransactionEntity transaction = new TransactionEntity();
+        transaction.setTransactionId(null);
+        transaction.setStock(csvRecord.getStock());
+        transaction.setType(csvRecord.getType());
+        transaction.setPrice(csvRecord.getPrice());
+        transaction.setQuantity(csvRecord.getQuantity());
+        transaction.setUser(userService.getUser(csvRecord.getUserId()));
+        transaction.setClient(clientService.getClient(csvRecord.getClientId()));
+        return transaction;
+    }
+}
+```
 - Persist the JPA entity into DB
     ```.to("jpa:com.example.springcameljpademo.model.TransactionEntity")```
 
@@ -237,55 +240,3 @@ public class CamelRoute extends RouteBuilder {
     }
 }
 ```
-
-```java
-@Component
-public class CsvRecordToTransactionMapper {
-
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private ClientService clientService;
-
-    public TransactionEntity convertAndTransform(TransactionCsvItem csvRecord) throws RecordNotFoundException {
-        //TODO using Lombok builder
-        TransactionEntity transaction = new TransactionEntity();
-        transaction.setTransactionId(null);
-        transaction.setStock(csvRecord.getStock());
-        transaction.setType(csvRecord.getType());
-        transaction.setPrice(csvRecord.getPrice());
-        transaction.setQuantity(csvRecord.getQuantity());
-        transaction.setUser(userService.getUser(csvRecord.getUserId()));
-        transaction.setClient(clientService.getClient(csvRecord.getClientId()));
-        // log.info("Converting ({}) into ({})", csvRecord, transaction);
-        return transaction;
-    }
-}
-```
-
-```java
-@Component
-public class CsvRecordToTransactionMapper {
-
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private ClientService clientService;
-
-    public TransactionEntity convertAndTransform(TransactionCsvItem csvRecord) throws RecordNotFoundException {
-        //TODO using Lombok builder
-        TransactionEntity transaction = new TransactionEntity();
-        transaction.setTransactionId(null);
-        transaction.setStock(csvRecord.getStock());
-        transaction.setType(csvRecord.getType());
-        transaction.setPrice(csvRecord.getPrice());
-        transaction.setQuantity(csvRecord.getQuantity());
-        transaction.setUser(userService.getUser(csvRecord.getUserId()));
-        transaction.setClient(clientService.getClient(csvRecord.getClientId()));
-        return transaction;
-    }
-}
-```
-
