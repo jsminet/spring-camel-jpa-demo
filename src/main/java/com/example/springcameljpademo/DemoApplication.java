@@ -37,11 +37,11 @@ public class DemoApplication {
 	private ApiInfo getApiInfo() {
 		// Swagger API: http://localhost:8080/swagger-ui.html
 		return new ApiInfoBuilder()
-				.title("Transaction's API")
+				.title("Transactions API")
 				.version("1.0")
-				.description("Manage Transaction API")
+				.description("Manage Transactions API")
 				.contact(new Contact("MD3431", "http://www.something.com", "email@something.com"))
-				.license("Spring Boot Version 2.3.0.RELEASE")
+				.license("Spring Boot 2.3.0.RELEASE")
 				.build();
 	}
 }

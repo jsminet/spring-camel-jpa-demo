@@ -7,6 +7,7 @@ import com.example.springcameljpademo.service.UserClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigInteger;
@@ -20,6 +21,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/v1/demo")
+@ApiIgnore
 public class UserClientController {
 
     @Autowired
