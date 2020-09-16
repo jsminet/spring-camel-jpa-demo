@@ -46,12 +46,12 @@ And execute the scripts below:
 
 ![scripts](https://user-images.githubusercontent.com/6589406/90981323-9f45e300-e560-11ea-8c61-eb778925c549.png)
 
-### 3.3. DBML
+## 3.3. DBML
 See the above dbml doc [visualized on dbdiagam](https://dbdiagram.io/d/5f3e9875cf48a141ff559889)
 
 ![spring-boot-camel-jpa](https://user-images.githubusercontent.com/6589406/90981101-80931c80-e55f-11ea-8261-e638facad38a.png)
 
-### 3.4. Run the application
+## 3.4. Run the application
 Start it up with:
 ```commandline
 mvn clean spring-boot:run
@@ -78,7 +78,6 @@ Using Postman, you can make all the requests below to test the REST API on this 
 - Delete a transaction: ```DELETE /v1/demo/transactions/{id} ```
 
 ## 5. Camel Route
-
 - Create a new file containing the transactions to be pushed into DB
 ```textmate
 1,2,TSLA,Sell,800,1000
