@@ -5,10 +5,14 @@ import com.example.springcameljpademo.exception.RecordNotFoundException;
 import com.example.springcameljpademo.model.TransactionEntity;
 import com.example.springcameljpademo.service.TransactionService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+// import springfox.bean.validators.configuration.BeanValidatorPluginsConfiguration;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigInteger;
@@ -22,6 +26,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/v1/demo")
+// @Import(BeanValidatorPluginsConfiguration.class)
 @Api("TransactionController Relevant api")
 public class TransactionController {
 
@@ -54,6 +59,12 @@ public class TransactionController {
 
     @GetMapping("/transactions/{id}")
     @ApiOperation(value = "Getting specific transaction", notes = "According to its id")
+    @ApiImplicitParams({
+            @ApiImplicitParam(paramType = "header", name = "username", dataType = "String", required = true,
+                    value = "User's Name", defaultValue = "xiaoqiang"),
+            @ApiImplicitParam(paramType = "query", name = "password", dataType = "String", required = true, value = "User's password",
+                    defaultValue = "xiaoxiong")
+    })
     TransactionEntity getTransaction(@PathVariable Long id) throws RecordNotFoundException {
         return transactionService.getTransaction(id);
     }
@@ -65,6 +76,10 @@ public class TransactionController {
     }
 
     @PutMapping("/transactions/{id}")
+    @ApiImplicitParams({
+            @ApiImplicitParam(paramType = "header", name = "username", dataType = "String", required = true,
+                    value = "User's Name", defaultValue = "xiaoqiang")
+    })
     @ApiOperation(value = "Creating or updating transaction", notes = "According to new Transaction Entity, and its id")
     TransactionEntity putTransaction(@RequestBody TransactionItem newTransaction, @PathVariable Long id) throws RecordNotFoundException {
         return transactionService.putTransaction(newTransaction, id);
