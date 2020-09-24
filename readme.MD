@@ -13,7 +13,7 @@ A demo project using :
 - Camel-bindy: 3.0.0-M1
 - Camel-jpa: 3.0.0-M1
 - Postgres Docker image (9.6.19-alpine)
-- Maven: 3.0+
+- Maven: 3.0
 - Java: 1.8
 
 ## 3. Installation
