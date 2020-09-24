@@ -8,6 +8,7 @@ A demo project using :
 
 ## 2. Versions used:
 - Spring Boot: 2.3.0.RELEASE
+- Springfox Swagger2 2.10.5
 - Apache Camel: 3.0.0-M1
 - Camel-bindy: 3.0.0-M1
 - Camel-jpa: 3.0.0-M1
